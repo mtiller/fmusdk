@@ -8,7 +8,11 @@
 #ifndef main_h
 #define main_h
 
+#ifdef _MSC_VER
 #include <windows.h>
+#else
+#define HANDLE int
+#endif
 #include "fmiModelFunctions.h"
 #include "xml_parser.h"
 
