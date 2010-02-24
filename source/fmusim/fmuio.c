@@ -1,5 +1,9 @@
 #include "fmuio.h"
 
+#include <stdio.h>
+#include <string.h>
+#include <stdarg.h>
+
 static void doubleToCommaString(char* buffer, double r){
     char* comma;
     sprintf(buffer, "%.16g", r);
@@ -11,7 +15,7 @@ static void doubleToCommaString(char* buffer, double r){
 // if separator is ',', columns are separated by ',' and '.' is used for floating-point numbers.
 // otherwise, the given separator (e.g. ';' or '\t') is to separate columns, and ',' is used for 
 // floating-point numbers.
-static void outputRow(FMU *fmu, fmiComponent c, double time, FILE* file, char separator, boolean header) {
+static void outputRow(FMU *fmu, fmiComponent c, double time, FILE* file, char separator, int header) {
     int k;
     fmiReal r;
     fmiInteger i;
@@ -161,8 +165,9 @@ static void replaceRefsInMessage(const char* msg, char* buffer, int nBuffer, FMU
 }
 
 #define MAX_MSG_SIZE 1000
-static void fmuLogger(fmiComponent c, fmiString instanceName, fmiStatus status,
-               fmiString category, fmiString message, ...) {
+static void fmuLogger(FMU *fmu, fmiComponent c, fmiString instanceName,
+		      fmiStatus status, fmiString category,
+		      fmiString message, ...) {
     char msg[MAX_MSG_SIZE];
     char* copy;
     va_list argp;
@@ -173,7 +178,7 @@ static void fmuLogger(fmiComponent c, fmiString instanceName, fmiStatus status,
 
     // replace e.g. ## and #r12#  
     copy = strdup(msg);
-    replaceRefsInMessage(copy, msg, MAX_MSG_SIZE, &fmu);
+    replaceRefsInMessage(copy, msg, MAX_MSG_SIZE, fmu);
     free(copy);
     
     // print the final message

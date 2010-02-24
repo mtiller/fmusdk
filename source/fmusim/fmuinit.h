@@ -8,6 +8,8 @@
 #ifndef fmuinit_h
 #define fmuinit_h
 
-int fmuLoadDll(const char* dllPath, FMU *fmu);
+#include "main.h"
 
-#endif fmuinit_h
+extern int fmuLoadDll(const char* dllPath, FMU *fmu);
+
+#endif // fmuinit_h

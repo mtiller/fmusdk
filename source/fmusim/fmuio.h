@@ -8,4 +8,6 @@
 #ifndef fmuio_h
 #define fmuio_h
 
-#endif fmuio_h
+#include "main.h"
+
+#endif // fmuio_h
