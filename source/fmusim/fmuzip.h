@@ -10,4 +10,4 @@
 
 int fmuUnzip(const char *zipPath, const char *outPath);
 
-#endif zip_h
+#endif // zip_h

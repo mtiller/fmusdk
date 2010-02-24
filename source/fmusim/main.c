@@ -25,7 +25,6 @@
 #include <string.h>
 #include "main.h"
 
-#define BUFSIZE 4096
 #define XML_FILE  "modelDescription.xml"
 #define DLL_DIR   "binaries\\win32\\"
 #define RESULT_FILE "result.csv"
