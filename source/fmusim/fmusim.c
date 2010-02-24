@@ -1,4 +1,15 @@
 #include "fmusim.h"
+#include "fmuio.h"
+
+#include <stdio.h>
+#include <stdlib.h>
+
+#ifndef _MSC_VER
+#define TRUE 1
+#define FALSE 0
+#endif
+
+#define RESULT_FILE "result.csv"
 
 // simulate the given FMU using the forward euler method.
 // time events are processed by reducing step size to exactly hit tNext.
@@ -51,8 +62,7 @@ int fmuSimulate(FMU* fmu, double tEnd, double h, fmiBoolean loggingOn, char sepa
 
     // open result file
     if (!(file=fopen(RESULT_FILE, "w"))) {
-        printf("could not write %s because:\n", RESULT_FILE);
-        printf("    %s\n", strerror(errno));
+        printf("could not write %s\n", RESULT_FILE);
         return 0; // failure
     }
         
@@ -163,6 +173,7 @@ int fmuSimulate(FMU* fmu, double tEnd, double h, fmiBoolean loggingOn, char sepa
   printf("  time events ...... %d\n", nTimeEvents);
   printf("  state events ..... %d\n", nStateEvents);
   printf("  step events ...... %d\n", nStepEvents);
+  printf("CSV file '%s' written", RESULT_FILE);
 
   return 1; // success
 }

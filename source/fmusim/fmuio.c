@@ -4,6 +4,8 @@
 #include <string.h>
 #include <stdarg.h>
 
+extern FMU fmu;
+
 static void doubleToCommaString(char* buffer, double r){
     char* comma;
     sprintf(buffer, "%.16g", r);
@@ -165,9 +167,9 @@ static void replaceRefsInMessage(const char* msg, char* buffer, int nBuffer, FMU
 }
 
 #define MAX_MSG_SIZE 1000
-static void fmuLogger(FMU *fmu, fmiComponent c, fmiString instanceName,
-		      fmiStatus status, fmiString category,
-		      fmiString message, ...) {
+void fmuLogger(fmiComponent c, fmiString instanceName,
+	       fmiStatus status, fmiString category,
+	       fmiString message, ...) {
     char msg[MAX_MSG_SIZE];
     char* copy;
     va_list argp;
@@ -178,7 +180,7 @@ static void fmuLogger(FMU *fmu, fmiComponent c, fmiString instanceName,
 
     // replace e.g. ## and #r12#  
     copy = strdup(msg);
-    replaceRefsInMessage(copy, msg, MAX_MSG_SIZE, fmu);
+    replaceRefsInMessage(copy, msg, MAX_MSG_SIZE, &fmu);
     free(copy);
     
     // print the final message

@@ -10,4 +10,8 @@
 
 #include "main.h"
 
+void fmuLogger(fmiComponent c, fmiString instanceName,
+	       fmiStatus status, fmiString category,
+	       fmiString message, ...);
+
 #endif // fmuio_h

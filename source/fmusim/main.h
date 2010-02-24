@@ -11,7 +11,8 @@
 #ifdef _MSC_VER
 #include <windows.h>
 #else
-#define HANDLE int
+#define HANDLE void *
+/* See http://www.yolinux.com/TUTORIALS/LibraryArchives-StaticAndDynamic.html */
 #endif
 #include "fmiModelFunctions.h"
 #include "xml_parser.h"

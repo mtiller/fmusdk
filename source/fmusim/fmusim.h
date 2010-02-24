@@ -8,7 +8,9 @@
 #ifndef fmusim_h
 #define fmusim_h
 
+#include "main.h"
+
 int fmuSimulate(FMU* fmu, double tEnd, double h,
 		fmiBoolean loggingOn, char separator);
 
-#endif fmusim_h
+#endif // fmusim_h

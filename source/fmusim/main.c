@@ -25,11 +25,48 @@
 #include <string.h>
 #include "main.h"
 
+#ifndef _MSC_VER
+#include <sys/stat.h>
+#endif
+
 #define XML_FILE  "modelDescription.xml"
 #define DLL_DIR   "binaries\\win32\\"
-#define RESULT_FILE "result.csv"
+#define BUFSIZE 4096
 
-static FMU fmu; // the fmu to simulate
+FMU fmu; // the fmu to simulate
+
+#ifdef _MSC_VER
+// fmuFileName is an absolute path, e.g. "C:\test\a.fmu"
+// or relative to the current dir, e.g. "..\test\a.fmu"
+static char* getFmuPath(const char* fmuFileName){
+    OFSTRUCT fileInfo;
+    if (HFILE_ERROR==OpenFile(fmuFileName, &fileInfo, OF_EXIST)) {
+        printf ("error: Could not open FMU '%s': %s\n", fmuFileName, strerror(GetLastError()));
+        return NULL;
+    }
+    //printf ("full path to FMU: '%s'\n", fileInfo.szPathName); 
+    return strdup(fileInfo.szPathName);
+}
+static char* getTmpPath() {
+    char tmpPath[BUFSIZE];
+    if(! GetTempPath(BUFSIZE, tmpPath)) {
+        printf ("error: Could not find temporary disk space: %d\n", strerror(GetLastError()));
+        return NULL;
+    }
+    strcat(tmpPath, "fmu\\");
+    return strdup(tmpPath);
+}
+#else
+// fmuFileName is an absolute path, e.g. "C:\test\a.fmu"
+// or relative to the current dir, e.g. "..\test\a.fmu"
+static char* getFmuPath(const char* fmuFileName){
+  /* Not sure why this is useful.  Just returning the filename. */
+  return strdup(fmuFileName);
+}
+static char* getTmpPath() {
+  return strdup(mkdtemp("fmuTmp"));
+}
+#endif
 
 static void printHelp(const char* fmusim) {
     printf("command syntax: %s <model.fmu> <tEnd> <h> <loggingOn> <csv separator>\n", fmusim);
@@ -98,7 +135,7 @@ int main(int argc, char *argv[]) {
 
     // unzip the FMU to the tmpPath directory
     tmpPath = getTmpPath();
-    if (!unzip(fmuPath, tmpPath)) exit(EXIT_FAILURE);
+    if (!fmuUnzip(fmuPath, tmpPath)) exit(EXIT_FAILURE);
 
     // parse tmpPath\modelDescription.xml
     xmlPath = calloc(sizeof(char), strlen(tmpPath) + strlen(XML_FILE) + 1);
@@ -120,7 +157,6 @@ int main(int argc, char *argv[]) {
     printf("FMU Simulator: run '%s' from t=0..%g with step size h=%g, loggingOn=%d, csv separator='%c'\n", 
             fmuFileName, tEnd, h, loggingOn, csv_separator);
     simulate(&fmu, tEnd, h, loggingOn, csv_separator);
-    printf("CSV file '%s' written", RESULT_FILE);
 
     // release FMU 
     FreeLibrary(fmu.dllHandle);

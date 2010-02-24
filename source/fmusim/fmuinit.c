@@ -1,32 +1,20 @@
 #include "fmuinit.h"
 
-// fmuFileName is an absolute path, e.g. "C:\test\a.fmu"
-// or relative to the current dir, e.g. "..\test\a.fmu"
-static char* getFmuPath(const char* fmuFileName){
-    OFSTRUCT fileInfo;
-    if (HFILE_ERROR==OpenFile(fmuFileName, &fileInfo, OF_EXIST)) {
-        printf ("error: Could not open FMU '%s': %s\n", fmuFileName, strerror(GetLastError()));
-        return NULL;
-    }
-    //printf ("full path to FMU: '%s'\n", fileInfo.szPathName); 
-    return strdup(fileInfo.szPathName);
-}
+#include "xml_parser.h"
+#include <stdio.h>
+#include <dlfcn.h>
 
-static char* getTmpPath() {
-    char tmpPath[BUFSIZE];
-    if(! GetTempPath(BUFSIZE, tmpPath)) {
-        printf ("error: Could not find temporary disk space: %d\n", strerror(GetLastError()));
-        return NULL;
-    }
-    strcat(tmpPath, "fmu\\");
-    return strdup(tmpPath);
-}
+#define BUFSIZE 4096
 
 static void* getAdr(FMU *fmu, const char* functionName){
     char name[BUFSIZE];
     void* fp;
     sprintf(name, "%s_%s", getModelIdentifier(fmu->modelDescription), functionName);
+#ifdef _MSC_VER
     fp = GetProcAddress(fmu->dllHandle, name);
+#else
+    fp = dlsym(fmu->dllHandle, name);
+#endif
     if (!fp) {
         printf ("error: Function %s not found in dll\n", name);        
     }
@@ -35,9 +23,13 @@ static void* getAdr(FMU *fmu, const char* functionName){
 
 // Load the given dll and set function pointers in fmu
 int fmuLoadDll(const char* dllPath, FMU *fmu) {
+#ifdef _MSC_VER
     HANDLE h = LoadLibrary(dllPath);
+#else
+    HANDLE h = dlopen(dllPath, RTLD_LAZY);
+#endif
     if (!h) {
-        printf("error: Could not load %s: %s\n", dllPath, strerror(GetLastError()));
+        printf("error: Could not load %s\n", dllPath);
         return 0; // failure
     }
     fmu->dllHandle = h;
