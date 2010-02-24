@@ -7,6 +7,7 @@
 #ifndef _MSC_VER
 #define TRUE 1
 #define FALSE 0
+#define min(a,b) (a>b ? b : a)
 #endif
 
 #define RESULT_FILE "result.csv"

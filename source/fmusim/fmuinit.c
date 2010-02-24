@@ -59,3 +59,13 @@ int fmuLoadDll(const char* dllPath, FMU *fmu) {
     fmu->terminate               = (fTerminate)          getAdr(fmu, "fmiTerminate");
     return 1; // success  
 }
+
+void fmuFree(FMU *fmu) {
+#ifdef _MSC_VER
+  FreeLibrary(fmu->dllHandle);
+  freeElement(fmu->modelDescription);
+#else
+  dlclose(fmu->dllHandle);
+  freeElement(fmu->modelDescription);
+#endif
+}

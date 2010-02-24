@@ -9,9 +9,13 @@
 #define fmuio_h
 
 #include "main.h"
+#include <stdio.h>
 
-void fmuLogger(fmiComponent c, fmiString instanceName,
+extern void fmuLogger(fmiComponent c, fmiString instanceName,
 	       fmiStatus status, fmiString category,
 	       fmiString message, ...);
+
+extern void outputRow(FMU *fmu, fmiComponent c, double time, FILE* file,
+	       char separator, int header);
 
 #endif // fmuio_h

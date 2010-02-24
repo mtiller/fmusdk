@@ -17,7 +17,7 @@ static void doubleToCommaString(char* buffer, double r){
 // if separator is ',', columns are separated by ',' and '.' is used for floating-point numbers.
 // otherwise, the given separator (e.g. ';' or '\t') is to separate columns, and ',' is used for 
 // floating-point numbers.
-static void outputRow(FMU *fmu, fmiComponent c, double time, FILE* file, char separator, int header) {
+void outputRow(FMU *fmu, fmiComponent c, double time, FILE* file, char separator, int header) {
     int k;
     fmiReal r;
     fmiInteger i;

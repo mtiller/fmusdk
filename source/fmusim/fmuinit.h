@@ -11,5 +11,6 @@
 #include "main.h"
 
 extern int fmuLoadDll(const char* dllPath, FMU *fmu);
+extern void fmuFree(FMU *fmu);
 
 #endif // fmuinit_h

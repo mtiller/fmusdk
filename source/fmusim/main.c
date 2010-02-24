@@ -148,7 +148,7 @@ int main(int argc, char *argv[]) {
     dllPath = calloc(sizeof(char), strlen(tmpPath) + strlen(DLL_DIR) 
             + strlen( getModelIdentifier(fmu.modelDescription)) +  strlen(".dll") + 1);
     sprintf(dllPath,"%s%s%s.dll", tmpPath, DLL_DIR, getModelIdentifier(fmu.modelDescription));
-    if (!loadDll(dllPath, &fmu)) exit(EXIT_FAILURE); 
+    if (!fmuLoadDll(dllPath, &fmu)) exit(EXIT_FAILURE); 
     free(dllPath);
     free(fmuPath);
     free(tmpPath);
@@ -156,10 +156,9 @@ int main(int argc, char *argv[]) {
     // run the simulation
     printf("FMU Simulator: run '%s' from t=0..%g with step size h=%g, loggingOn=%d, csv separator='%c'\n", 
             fmuFileName, tEnd, h, loggingOn, csv_separator);
-    simulate(&fmu, tEnd, h, loggingOn, csv_separator);
+    fmuSimulate(&fmu, tEnd, h, loggingOn, csv_separator);
 
     // release FMU 
-    FreeLibrary(fmu.dllHandle);
-    freeElement(fmu.modelDescription);
+    fmuFree(&fmu);
     return EXIT_SUCCESS;
 }
