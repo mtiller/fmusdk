@@ -3,3 +3,5 @@
 fmu
 *.o
 *.so
+source/fmusim/fmusim
+
