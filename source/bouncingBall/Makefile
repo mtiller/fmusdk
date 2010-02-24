@@ -11,16 +11,18 @@ all: bouncingBall.fmu
 %.fmu: %.so
 	rm -rf fmu
 	mkdir fmu
+	mkdir fmu/binaries
 	mkdir fmu/binaries/linux32
 	mkdir fmu/sources
 	mkdir fmu/documentation
-	cp $@ fmu/binaries/linux32
-	cp *.c *.h fmu/sources
+	cp $< fmu/binaries/linux32
+	-cp *.c fmu/sources
+	-cp *.h fmu/sources
 	cp *.html fmu/documentation
 	cp *.png fmu/documentation
 	cp modelDescription.xml fmu
 	cp model.png fmu
-	(cd fmu; zip ../$< *)
+	(cd fmu; zip ../$@ *)
 
 clean:
 	rm -f *.so *.o
