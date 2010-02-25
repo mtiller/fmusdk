@@ -6,6 +6,7 @@
 
 #include <stdio.h>
 #include <assert.h>
+#include <malloc.h>
 #include "stack.h"
 
 Stack* stackNew(int initialSize, int inc){

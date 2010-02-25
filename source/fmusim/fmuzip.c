@@ -43,7 +43,11 @@ int fmuUnzip(const char *zipPath, const char *outPath) {
         }
         return 0; // error       
     }
+#if WINDOWS
     strcat(binPath, "\\bin");
+#else
+    strcat(binPath, "/bin");
+#endif
     if (!SetCurrentDirectory(binPath)) {
         printf ("error: could not change to directory '%s': %s\n", binPath, strerror(GetLastError())); 
         return 0; // error        
@@ -81,7 +85,7 @@ int fmuUnzip(const char *zipPath, const char *outPath) {
     char* cmd = (char*)calloc(sizeof(char), n);
 
     // remember current directory
-    if (getcwd(cwd, BUFSIZE)) {
+    if (!getcwd(cwd, BUFSIZE)) {
       printf ("error: Could not get current directory\n");
       return 0; // error
     }
@@ -89,19 +93,28 @@ int fmuUnzip(const char *zipPath, const char *outPath) {
     const char *FMUSDK_HOME = getenv("FMUSDK_HOME");
     // change to %FMUSDK_HOME%\bin to find 7z.dll and 7z.exe
     if (FMUSDK_HOME==NULL) {
-      printf ("error: Could not get value of FMUSDK_HOME\n");
-      return 0; // error       
-    }
-    strcat(binPath, "\\bin");
-    if (!chdir(binPath)) {
-      printf ("error: could not change to directory '%s'\n", binPath);
-      return 0; // error        
+      printf ("warning: Could not get value of FMUSDK_HOME, assuming 7zip is in your path.\n");
+      FMUSDK_HOME = strdup("");
+    } else {
+#if WINDOWS
+        strcat(binPath, "\\bin");
+#else
+        strcat(binPath, "/bin");
+#endif
+	if (!chdir(binPath)) {
+	    printf ("error: could not change to directory '%s'\n", binPath);
+	    return 0; // error        
+	}
     }
    
     // run the unzip command
+#if WINDOWS
     // remove "> NUL" to see the unzip protocol
     sprintf(cmd, "%s%s \"%s\" > NUL", UNZIP_CMD, outPath, zipPath); 
-    // printf("cmd='%s'\n", cmd);
+#else
+    sprintf(cmd, "%s%s \"%s\" > /dev/null", UNZIP_CMD, outPath, zipPath); 
+#endif
+    printf("cmd='%s'\n", cmd);
     code = system(cmd);
     free(cmd);
     if (code!=SEVEN_ZIP_NO_ERROR) {

@@ -10,7 +10,9 @@
 
 #ifdef _MSC_VER
 #include <windows.h>
+#define WINDOWS 1
 #else
+#define WINDOWS 0
 #define HANDLE void *
 /* See http://www.yolinux.com/TUTORIALS/LibraryArchives-StaticAndDynamic.html */
 #endif

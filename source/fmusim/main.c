@@ -30,7 +30,11 @@
 #endif
 
 #define XML_FILE  "modelDescription.xml"
+#if WINDOWS
 #define DLL_DIR   "binaries\\win32\\"
+#else
+#define DLL_DIR   "binaries/linux32/"
+#endif
 #define BUFSIZE 4096
 
 FMU fmu; // the fmu to simulate
@@ -64,7 +68,13 @@ static char* getFmuPath(const char* fmuFileName){
   return strdup(fmuFileName);
 }
 static char* getTmpPath() {
-  return strdup(mkdtemp("fmuTmp"));
+  char *tmp = mkdtemp(strdup("fmuTmpXXXXXX"));
+  if (tmp==NULL) {
+    fprintf(stderr, "Couldn't create temporary directory\n");
+    exit(1);
+  }
+  /* return strdup(tmp); */
+  return strcat(tmp, "/");
 }
 #endif
 
