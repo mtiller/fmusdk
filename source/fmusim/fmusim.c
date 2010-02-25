@@ -174,7 +174,7 @@ int fmuSimulate(FMU* fmu, double tEnd, double h, fmiBoolean loggingOn, char sepa
   printf("  time events ...... %d\n", nTimeEvents);
   printf("  state events ..... %d\n", nStateEvents);
   printf("  step events ...... %d\n", nStepEvents);
-  printf("CSV file '%s' written", RESULT_FILE);
+  printf("CSV file '%s' written.\n", RESULT_FILE);
 
   return 1; // success
 }

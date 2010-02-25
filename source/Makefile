@@ -24,7 +24,7 @@ all:
 	cp *.png fmu/documentation
 	cp modelDescription.xml fmu
 	cp model.png fmu
-	(cd fmu; zip ../$@ *)
+	(cd fmu; zip -r ../$@ *)
 
 clean:
 	(cd bouncingBall; make dirclean)

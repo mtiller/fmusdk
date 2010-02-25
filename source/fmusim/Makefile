@@ -11,3 +11,5 @@ fmusim: $(OBJS)
 clean:
 	rm -f $(OBJS)
 	rm fmusim
+	rm -rf fmuTmp*
+

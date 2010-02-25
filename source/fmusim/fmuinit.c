@@ -26,6 +26,7 @@ int fmuLoadDll(const char* dllPath, FMU *fmu) {
 #ifdef _MSC_VER
     HANDLE h = LoadLibrary(dllPath);
 #else
+    printf("dllPath = %s\n", dllPath);
     HANDLE h = dlopen(dllPath, RTLD_LAZY);
 #endif
     if (!h) {
@@ -63,7 +64,7 @@ int fmuLoadDll(const char* dllPath, FMU *fmu) {
 void fmuFree(FMU *fmu) {
 #ifdef _MSC_VER
   FreeLibrary(fmu->dllHandle);
-  freeElement(fmu->modelDescription);
+  freeElement(fmumodelDescription);
 #else
   dlclose(fmu->dllHandle);
   freeElement(fmu->modelDescription);

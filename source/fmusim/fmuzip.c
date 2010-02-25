@@ -81,8 +81,8 @@ int fmuUnzip(const char *zipPath, const char *outPath) {
     int code;
     char cwd[BUFSIZE];
     char binPath[BUFSIZE];
-    int n = strlen(UNZIP_CMD) + strlen(outPath) + 1 +  strlen(zipPath) + 9;
-    char* cmd = (char*)calloc(sizeof(char), n);
+    int n;
+    char* cmd;
 
     // remember current directory
     if (!getcwd(cwd, BUFSIZE)) {
@@ -109,9 +109,13 @@ int fmuUnzip(const char *zipPath, const char *outPath) {
    
     // run the unzip command
 #if WINDOWS
+    n = strlen(UNZIP_CMD) + strlen(outPath) + 1 +  strlen(zipPath) + 9;
+    cmd = (char*)calloc(sizeof(char), n);
     // remove "> NUL" to see the unzip protocol
     sprintf(cmd, "%s%s \"%s\" > NUL", UNZIP_CMD, outPath, zipPath); 
 #else
+    n = strlen(UNZIP_CMD) + strlen(outPath) + 1 +  strlen(zipPath) + 16;
+    cmd = (char*)calloc(sizeof(char), n);
     sprintf(cmd, "%s%s \"%s\" > /dev/null", UNZIP_CMD, outPath, zipPath); 
 #endif
     printf("cmd='%s'\n", cmd);
