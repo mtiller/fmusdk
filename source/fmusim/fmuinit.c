@@ -2,7 +2,12 @@
 
 #include "xml_parser.h"
 #include <stdio.h>
+
+#ifdef _MSC_VER
+#include <windows.h>
+#else
 #include <dlfcn.h>
+#endif
 
 #define BUFSIZE 4096
 
@@ -64,7 +69,7 @@ int fmuLoadDll(const char* dllPath, FMU *fmu) {
 void fmuFree(FMU *fmu) {
 #ifdef _MSC_VER
   FreeLibrary(fmu->dllHandle);
-  freeElement(fmumodelDescription);
+  freeElement(fmu->modelDescription);
 #else
   dlclose(fmu->dllHandle);
   freeElement(fmu->modelDescription);

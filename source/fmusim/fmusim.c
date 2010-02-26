@@ -48,7 +48,7 @@ int fmuSimulate(FMU* fmu, double tEnd, double h, fmiBoolean loggingOn, char sepa
     callbacks.allocateMemory = calloc;
     callbacks.freeMemory = free;
     c = fmu->instantiateModel(getModelIdentifier(md), guid, callbacks, loggingOn);
-    if (!c) return error("could not instantiate model");
+    if (!c) return fmuError("could not instantiate model");
     
     // allocate memory 
     nx = getNumberOfStates(md);
@@ -59,7 +59,7 @@ int fmuSimulate(FMU* fmu, double tEnd, double h, fmiBoolean loggingOn, char sepa
         z    =  (double *) calloc(nz, sizeof(double));
         prez =  (double *) calloc(nz, sizeof(double));
     }
-    if (!x || !xdot || nz>0 && (!z || !prez)) return error("out of memory");
+    if (!x || !xdot || nz>0 && (!z || !prez)) return fmuError("out of memory");
 
     // open result file
     if (!(file=fopen(RESULT_FILE, "w"))) {
@@ -70,9 +70,9 @@ int fmuSimulate(FMU* fmu, double tEnd, double h, fmiBoolean loggingOn, char sepa
     // set the start time and initialize
     time = t0;
     fmiFlag =  fmu->setTime(c, t0);
-    if (fmiFlag > fmiWarning) return error("could not set time");
+    if (fmiFlag > fmiWarning) return fmuError("could not set time");
     fmiFlag =  fmu->initialize(c, toleranceControlled, t0, &eventInfo);
-    if (fmiFlag > fmiWarning)  error("could not initialize model");
+    if (fmiFlag > fmiWarning)  fmuError("could not initialize model");
     if (eventInfo.terminateSimulation) {
         printf("model requested termination at init");
         tEnd = time;
@@ -86,9 +86,9 @@ int fmuSimulate(FMU* fmu, double tEnd, double h, fmiBoolean loggingOn, char sepa
     while (time < tEnd) {
      // get current state and derivatives
      fmiFlag = fmu->getContinuousStates(c, x, nx);
-     if (fmiFlag > fmiWarning) return error("could not retrieve states");
+     if (fmiFlag > fmiWarning) return fmuError("could not retrieve states");
      fmiFlag = fmu->getDerivatives(c, xdot, nx);
-     if (fmiFlag > fmiWarning) return error("could not retrieve derivatives");
+     if (fmiFlag > fmiWarning) return fmuError("could not retrieve derivatives");
 
      // advance time
      tPre = time;
@@ -97,22 +97,22 @@ int fmuSimulate(FMU* fmu, double tEnd, double h, fmiBoolean loggingOn, char sepa
      if (timeEvent) time = eventInfo.nextEventTime;
      dt = time - tPre; 
      fmiFlag = fmu->setTime(c, time);
-     if (fmiFlag > fmiWarning) error("could not set time");
+     if (fmiFlag > fmiWarning) fmuError("could not set time");
 
      // perform one step
      for (i=0; i<nx; i++) x[i] += dt*xdot[i]; // forward Euler method
      fmiFlag = fmu->setContinuousStates(c, x, nx);
-     if (fmiFlag > fmiWarning) return error("could not set states");
+     if (fmiFlag > fmiWarning) return fmuError("could not set states");
      if (loggingOn) printf("Step %d to t=%.16g\n", nSteps, time);
     
      // Check for step event, e.g. dynamic state selection
      fmiFlag = fmu->completedIntegratorStep(c, &stepEvent);
-     if (fmiFlag > fmiWarning) return error("could not complete intgrator step");
+     if (fmiFlag > fmiWarning) return fmuError("could not complete intgrator step");
 
      // Check for state event
      for (i=0; i<nz; i++) prez[i] = z[i]; 
      fmiFlag = fmu->getEventIndicators(c, z, nz);
-     if (fmiFlag > fmiWarning) return error("could not retrieve event indicators");
+     if (fmiFlag > fmiWarning) return fmuError("could not retrieve event indicators");
      stateEvent = FALSE;
      for (i=0; i<nz; i++) 
          stateEvent = stateEvent || (prez[i] * z[i] < 0);  
@@ -137,7 +137,7 @@ int fmuSimulate(FMU* fmu, double tEnd, double h, fmiBoolean loggingOn, char sepa
 
         // event iteration in one step, ignoring intermediate results
         fmiFlag = fmu->eventUpdate(c, fmiFalse, &eventInfo);
-        if (fmiFlag > fmiWarning) return error("could not perform event update");
+        if (fmiFlag > fmiWarning) return fmuError("could not perform event update");
         
         // terminate simulation, if requested by the model
         if (eventInfo.terminateSimulation) {

@@ -11,7 +11,7 @@ if defined VS90COMNTOOLS (call "%VS90COMNTOOLS%\vsvars32.bat") else ^
 if defined VS80COMNTOOLS (call "%VS80COMNTOOLS%\vsvars32.bat") else ^
 goto noCompiler
 
-set SRC=main.c xml_parser.c stack.c
+set SRC=main.c xml_parser.c stack.c fmuinit.c fmusim.c fmuio.c fmuzip.c
 
 rem create fmusim.exe in the fmusim dir
 pushd fmusim

@@ -4,7 +4,9 @@
 #include <stdlib.h>
 #include <malloc.h>
 
-#ifndef _MSC_VER
+#ifdef _MSC_VER
+#include <windows.h>
+#else
 #include <unistd.h>
 #endif
 

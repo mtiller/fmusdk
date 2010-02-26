@@ -189,7 +189,7 @@ void fmuLogger(fmiComponent c, fmiString instanceName,
     printf("%s %s (%s): %s\n", fmiStatusToString(status), instanceName, category, msg);
 }
 
-static int error(const char* message){
+int fmuError(const char* message){
     printf("%s\n", message);
     return 0;
 }

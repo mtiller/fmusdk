@@ -17,5 +17,7 @@ extern void fmuLogger(fmiComponent c, fmiString instanceName,
 
 extern void outputRow(FMU *fmu, fmiComponent c, double time, FILE* file,
 	       char separator, int header);
+		   
+extern int fmuError(const char *msg);
 
 #endif // fmuio_h
