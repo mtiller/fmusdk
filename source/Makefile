@@ -3,6 +3,7 @@ all:
 	(cd dq; make dq.fmu)
 	(cd inc; make inc.fmu)
 	(cd values; make values.fmu)
+	(cd fmusim; make fmusim)
 
 %.o: %.c
 	$(CC) -c -fPIC $(CFLAGS) $< -o $@
